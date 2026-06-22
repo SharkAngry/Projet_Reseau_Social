@@ -1,1 +1,3 @@
 /api/config/db.php
+/api/config/mail-config.php
+/vendor
