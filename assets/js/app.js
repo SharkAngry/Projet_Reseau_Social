@@ -29,12 +29,21 @@ async function router() {
 
   const viewPath = routes[hash];
   if (!viewPath) {
-    document.getElementById("app").innerHTML = "<p>Page introuvable</p>";
+    document.getElementById("page-content").innerHTML =
+      "<p>Page introuvable</p>";
     return;
   }
 
   const response = await fetch(viewPath);
-  document.getElementById("app").innerHTML = await response.text();
+  document.getElementById("page-content").innerHTML = await response.text();
+
+  const isProtected = PROTECTED_ROUTES.includes(hash);
+  document.getElementById("main-nav").style.display = isProtected
+    ? "flex"
+    : "none";
+  document.getElementById("main-footer").style.display = isProtected
+    ? "block"
+    : "none";
 
   if (typeof window.initPage === "function") {
     window.initPage(hash);
@@ -43,3 +52,10 @@ async function router() {
 
 window.addEventListener("hashchange", router);
 window.addEventListener("DOMContentLoaded", router);
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("btn-logout")?.addEventListener("click", () => {
+    sessionStorage.clear();
+    window.location.hash = "login";
+  });
+});

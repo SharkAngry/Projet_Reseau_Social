@@ -7,7 +7,24 @@
     <link rel="stylesheet" href="assets/css/style.css" />
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <header id="main-nav" class="navbar" style="display: none">
+        <div class="navbar-brand">Réseau Social</div>
+        <nav class="navbar-links">
+          <a href="#accueil">Accueil</a>
+          <a href="#amis">Amis</a>
+          <a href="#chat">Messages</a>
+          <a href="#profil">Profil</a>
+          <button id="btn-logout">Déconnexion</button>
+        </nav>
+      </header>
+
+      <main id="page-content"></main>
+
+      <footer id="main-footer" style="display: none">
+        <p>&copy; 2026 Réseau Social — Projet ESGIS</p>
+      </footer>
+    </div>
 
     <script src="assets/js/api.js"></script>
     <script src="assets/js/app.js"></script>
