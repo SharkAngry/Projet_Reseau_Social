@@ -27,8 +27,7 @@ if ($user) {
     $stmt = $pdo->prepare('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?');
     $stmt->execute([$token, $expires, $user['id']]);
 
-    $resetLink = "http://localhost/projet-reseau-social/vues/clients/reset-password.html?token=$token";
-
+    $resetLink = "http://localhost/projet-reseau-social/index.html#reset-password?token=$token";
     $htmlBody = "
     <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 20px;'>
         <h2 style='color: #1877f2;'>Réinitialisation du mot de passe</h2>

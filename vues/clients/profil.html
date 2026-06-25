@@ -1,0 +1,33 @@
+<div class="profile-container">
+  <h1>Mon profil</h1>
+
+  <img id="profile-photo-preview" src="" alt="Photo de profil" width="100" />
+
+  <form id="profile-form">
+    <input type="file" id="profile-photo-input" accept="image/*" />
+    <input type="text" id="profile-nom" placeholder="Nom" required />
+    <input type="text" id="profile-prenom" placeholder="Prénom" required />
+    <button type="submit">Mettre à jour</button>
+  </form>
+  <p id="profile-message"></p>
+
+  <hr />
+
+  <h2>Changer le mot de passe</h2>
+  <form id="password-form">
+    <input
+      type="password"
+      id="old-password"
+      placeholder="Ancien mot de passe"
+      required
+    />
+    <input
+      type="password"
+      id="new-password"
+      placeholder="Nouveau mot de passe"
+      required
+    />
+    <button type="submit">Modifier</button>
+  </form>
+  <p id="password-message"></p>
+</div>
