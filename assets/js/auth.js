@@ -33,5 +33,33 @@ function initLoginForm() {
 }
 
 function initRegisterForm() {
-  // structure similaire, à compléter avec register.html
+  const form = document.getElementById("register-form");
+  const errorEl = document.getElementById("register-error");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorEl.textContent = "";
+
+    const nom = document.getElementById("reg-nom").value;
+    const prenom = document.getElementById("reg-prenom").value;
+    const email = document.getElementById("reg-email").value;
+    const password = document.getElementById("reg-password").value;
+
+    try {
+      // Utilisation de la fonction globale apiRequest définie par ton groupe
+      const data = await apiRequest("auth/register.php", "POST", {
+        nom,
+        prenom,
+        email,
+        password,
+      });
+
+      alert("Inscription réussie ! Un email de confirmation vous a été envoyé."); [cite: 21]
+      
+      // Une fois inscrit, on redirige l'utilisateur vers l'écran de connexion
+      window.location.hash = "login"; 
+    } catch (err) {
+      errorEl.textContent = err.message;
+    }
+  });
 }

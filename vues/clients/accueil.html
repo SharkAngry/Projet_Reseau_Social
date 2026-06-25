@@ -1,0 +1,23 @@
+<div class="feed-container">
+    
+    <div class="publish-card">
+        <h3>Créer une publication</h3>
+        <form id="add-article-form" enctype="multipart/form-data">
+            <textarea id="article-description" placeholder="Quoi de neuf aujourd'hui ?" required></textarea>
+            
+            <div class="publish-actions">
+                <label for="article-image" class="upload-btn">
+                    📷 Ajouter une photo
+                </label>
+                <input type="file" id="article-image" accept="image/*" style="display: none;">
+                <span id="file-name-preview">Aucun fichier sélectionné</span>
+                
+                <button type="submit" class="btn-publish">Publier</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="articles-flux">
+        </div>
+
+</div>
