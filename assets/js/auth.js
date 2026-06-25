@@ -37,16 +37,6 @@ function initRegisterForm() {
     e.preventDefault();
     errorEl.textContent = "";
 
-<<<<<<< HEAD
-    const nom = document.getElementById("reg-nom").value;
-    const prenom = document.getElementById("reg-prenom").value;
-    const email = document.getElementById("reg-email").value;
-    const password = document.getElementById("reg-password").value;
-
-    try {
-      // Utilisation de la fonction globale apiRequest définie par ton groupe
-      const data = await apiRequest("auth/register.php", "POST", {
-=======
     const nom = document.getElementById("register-nom").value;
     const prenom = document.getElementById("register-prenom").value;
     const email = document.getElementById("register-email").value;
@@ -54,28 +44,16 @@ function initRegisterForm() {
 
     try {
       await apiRequest("auth/register.php", "POST", {
->>>>>>> 9ffb86bf720583a812a2be570a246fdd7be81be7
         nom,
         prenom,
         email,
         password,
       });
-<<<<<<< HEAD
-
-      alert("Inscription réussie ! Un email de confirmation vous a été envoyé."); [cite: 21]
-      
-      // Une fois inscrit, on redirige l'utilisateur vers l'écran de connexion
-      window.location.hash = "login"; 
-=======
       window.location.hash = "login";
->>>>>>> 9ffb86bf720583a812a2be570a246fdd7be81be7
     } catch (err) {
       errorEl.textContent = err.message;
     }
   });
-<<<<<<< HEAD
-}
-=======
 }
 
 function initForgotForm() {
@@ -122,4 +100,3 @@ function initResetForm() {
     }
   });
 }
->>>>>>> 9ffb86bf720583a812a2be570a246fdd7be81be7

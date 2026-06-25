@@ -1,103 +1,128 @@
-// Suite de assets/js/feed.js
+const _prevInitPage_feed = window.initPage || function () {};
+window.initPage = function (page) {
+  _prevInitPage_feed(page);
+  if (page === "accueil") {
+    initPublishForm();
+    loadArticles();
+  }
+};
 
 function initPublishForm() {
-    const form = document.getElementById("add-article-form");
-    const fileInput = document.getElementById("article-image");
-    const filePreview = document.getElementById("file-name-preview");
+  const form = document.getElementById("add-article-form");
+  const fileInput = document.getElementById("article-image");
+  const filePreview = document.getElementById("file-name-preview");
+  if (!form) return;
 
-    if (!form) return;
+  fileInput.addEventListener("change", () => {
+    filePreview.textContent =
+      fileInput.files.length > 0
+        ? fileInput.files[0].name
+        : "Aucun fichier sélectionné";
+  });
 
-    // Petite touche UX pour afficher le nom de l'image sélectionnée
-    fileInput.addEventListener("change", () => {
-        if (fileInput.files.length > 0) {
-            filePreview.textContent = fileInput.files[0].name;
-        } else {
-            filePreview.textContent = "Aucun fichier sélectionné";
-        }
-    });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const description = document.getElementById("article-description").value;
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const description = document.getElementById("article-description").value;
-        
-        // Utilisation de FormData car il y a potentiellement un fichier image à envoyer
-        const formData = new FormData();
-        formData.append("description", description);
-        
-        if (fileInput.files.length > 0) {
-            formData.append("image", fileInput.files[0]);
-        }
-
-        try {
-            // Ici, comme on envoie un FormData, ton wrapper apiRequest doit être configuré 
-            // pour ne pas forcer le header "Content-Type: application/json" quand la méthode reçoit un FormData
-            // On appelle l'API de création
-            const response = await fetch("api/articles/create-article.php", {
-                method: "POST",
-                headers: {
-                    // Récupérer l'ID du sessionStorage s'il existe pour l'envoyer à l'API
-                    "X-User-Id": sessionStorage.getItem("user") ? JSON.parse(sessionStorage.getItem("user")).id : "1"
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                // On réinitialise le formulaire
-                form.reset();
-                filePreview.textContent = "Aucun fichier sélectionné";
-                
-                // On recharge instantanément la liste des articles (ZÉRO rechargement de page)
-                loadArticles();
-            } else {
-                alert("Erreur : " + data.message);
-            }
-
-        } catch (error) {
-            console.error("Erreur lors de la publication :", error);
-            alert("Impossible de publier pour le moment.");
-        }
-    });
-}
-
-// À rajouter dans assets/js/feed.js
-
-async function handleLike(articleId) {
-    const likeButton = document.querySelector(`#post-${articleId} .btn-like`);
-    const likeCountSpan = document.getElementById(`like-count-${articleId}`);
-    
-    // Récupérer l'ID utilisateur connecté
-    const userId = sessionStorage.getItem("user") ? JSON.parse(sessionStorage.getItem("user")).id : "1";
+    const formData = new FormData();
+    formData.append("description", description);
+    if (fileInput.files.length > 0)
+      formData.append("image", fileInput.files[0]);
 
     try {
-        // Envoi asynchrone de la réaction
-        const response = await fetch("api/articles/like-article.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-User-Id": userId
-            },
-            body: JSON.stringify({ article_id: articleId })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            // Mise à jour instantanée du DOM sans recharger la page
-            likeCountSpan.textContent = data.likes_count;
-
-            if (data.action === "added" || data.action === "updated") {
-                likeButton.classList.add("active-like");
-            } else if (data.action === "removed") {
-                likeButton.classList.remove("active-like");
-            }
-        } else {
-            console.error("Erreur renvoyée par l'API :", data.message);
-        }
-
+      await apiRequest("articles/create-article.php", "POST", formData, true);
+      form.reset();
+      filePreview.textContent = "Aucun fichier sélectionné";
+      loadArticles();
     } catch (error) {
-        console.error("Erreur lors du clic sur le like :", error);
+      alert("Erreur : " + error.message);
     }
+  });
+}
+
+async function loadArticles() {
+  const container = document.getElementById("articles-flux");
+  if (!container) return;
+
+  try {
+    const data = await apiRequest("articles/get-articles.php", "GET");
+    container.innerHTML =
+      data.articles.length === 0
+        ? "<p class='empty'>Aucune publication pour le moment.</p>"
+        : "";
+    data.articles.forEach((article) => {
+      container.insertAdjacentHTML("beforeend", createArticleHtml(article));
+    });
+  } catch (error) {
+    container.innerHTML =
+      "<p style='color:red;'>Erreur de chargement du fil.</p>";
+  }
+}
+
+function createArticleHtml(article) {
+  const avatar = article.photo_profil || "default-avatar.png";
+  const imageHtml = article.image
+    ? `<img src="assets/images/posts/${article.image}" class="post-image">`
+    : "";
+  const likedClass = article.my_reaction === "like" ? "active-like" : "";
+  const dislikedClass =
+    article.my_reaction === "dislike" ? "active-dislike" : "";
+
+  return `
+        <div class="post-card" id="post-${article.id}">
+            <div class="post-header">
+                <img src="assets/images/avatars/${avatar}" class="avatar-sm">
+                <div>
+                    <h4>${article.prenom} ${article.nom}</h4>
+                    <span class="post-date">${new Date(article.created_at).toLocaleString("fr-FR")}</span>
+                </div>
+            </div>
+            <p class="post-description">${article.description}</p>
+            ${imageHtml}
+            <div class="post-actions">
+                <button class="btn-like ${likedClass}" onclick="handleReaction(${article.id}, 'like')">
+                    👍 <span id="like-count-${article.id}">${article.likes_count}</span>
+                </button>
+                <button class="btn-dislike ${dislikedClass}" onclick="handleReaction(${article.id}, 'dislike')">
+                    👎 <span id="dislike-count-${article.id}">${article.dislikes_count}</span>
+                </button>
+                <button class="btn-comment" onclick="toggleCommentsSection(${article.id})">💬 Commenter</button>
+            </div>
+            <div id="comments-area-${article.id}" class="comments-area" style="display:none;">
+                <div id="comments-list-${article.id}"></div>
+                <form onsubmit="handleCommentSubmit(event, ${article.id})" class="comment-form">
+                    <input type="text" id="comment-input-${article.id}" placeholder="Écrire un commentaire...">
+                    <button type="submit">Envoyer</button>
+                </form>
+            </div>
+        </div>
+    `;
+}
+
+async function handleReaction(articleId, type) {
+  try {
+    const data = await apiRequest("articles/like-article.php", "POST", {
+      article_id: articleId,
+      type,
+    });
+    document.getElementById(`like-count-${articleId}`).textContent =
+      data.likes_count;
+    document.getElementById(`dislike-count-${articleId}`).textContent =
+      data.dislikes_count;
+
+    const likeBtn = document.querySelector(`#post-${articleId} .btn-like`);
+    const dislikeBtn = document.querySelector(
+      `#post-${articleId} .btn-dislike`,
+    );
+    likeBtn.classList.remove("active-like");
+    dislikeBtn.classList.remove("active-dislike");
+
+    if (data.action !== "removed") {
+      (data.type === "like" ? likeBtn : dislikeBtn).classList.add(
+        data.type === "like" ? "active-like" : "active-dislike",
+      );
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
