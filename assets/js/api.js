@@ -28,7 +28,7 @@ async function apiRequest(
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Une erreur est survenue");
+    throw new Error(data.error || data.message || "Une erreur est survenue");
   }
 
   return data;
