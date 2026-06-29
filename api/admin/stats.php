@@ -3,7 +3,7 @@ header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 
 // On remonte de deux niveaux pour atteindre le fichier de configuration centralisé
-require_once '../../config/db.php';
+require_once '../config/db.php';
 
 try {
     // 1. Compter le nombre total d'utilisateurs inscrits

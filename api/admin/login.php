@@ -2,7 +2,7 @@
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 
-require_once '../../config/db.php'; // On réutilise leur connexion DB centralisée
+require_once '../config/db.php'; // On réutilise leur connexion DB centralisée
 
 // Récupération des données reçues en JSON (car apiRequest envoie du JSON par défaut pour les objets)
 $data = json_decode(file_get_contents("php://input"), true);
