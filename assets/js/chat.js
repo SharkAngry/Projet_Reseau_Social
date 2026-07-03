@@ -77,6 +77,10 @@ async function loadFriendsInSidebar() {
 async function loadChatMessages() {
   if (!currentReceiverId) return;
 
+  // Relit à chaque fois — garanti d'être là si on est connecté
+  const _user = JSON.parse(sessionStorage.getItem("user") || "{}");
+  currentUserId = _user.id || null;
+
   try {
     const data = await apiRequest(
       `chat/get_messages.php?receiver_id=${currentReceiverId}`,
@@ -126,6 +130,9 @@ async function loadChatMessages() {
 
 // Démarre la discussion avec un ami
 function startChatWithUser(receiverId, receiverName) {
+  const _user = JSON.parse(sessionStorage.getItem("user") || "{}");
+  currentUserId = _user.id || null;
+
   currentReceiverId = receiverId;
 
   document.getElementById("chat-active-user-header").innerText =

@@ -76,3 +76,13 @@ CREATE TABLE messages (
     FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+-- Comptes de test
+-- Mot de passe client : test1234
+INSERT INTO users (nom, prenom, email, password) VALUES
+('Test', 'Client', 'client@test.com', '$2y$10$RVsQIa9JL9ka9q4MfocZo.N8QRL1uIEKK3yab4U.mRKYdjHc3rfK.');
+
+-- Mot de passe admin : admin1234
+INSERT INTO admins (nom, email, password, role) VALUES
+('Admin', 'admin@test.com', '$2y$10$5m5ITmLv0M/nrGtNgzGjTO3d.wTA5c.licCkf29l4oXVVd8tEeZL.', 'admin'),
+('Moderateur', 'moderateur@test.com', '$2y$10$5m5ITmLv0M/nrGtNgzGjTO3d.wTA5c.licCkf29l4oXVVd8tEeZL.', 'moderateur');

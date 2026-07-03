@@ -4,12 +4,12 @@ Application de réseau social inspirée de Facebook, développée en PHP natif (
 
 ## Membres du groupe
 
-| Nom | Lot | Responsabilité |
-|---|---|---|
-| MOUMOUNI Fadeel | Lot 1 | Architecture, authentification, profil |
-| FADOU Léon | Lot 2 | Fil d'articles, likes/dislikes, commentaires |
-| HOUNSINOU Doris | Lot 3 | Gestion des amis |
-| KINTOSSOU Duc-Martin | Lot 4 | Chat, back-office |
+| Nom                  | Lot   | Responsabilité                               |
+| -------------------- | ----- | -------------------------------------------- |
+| MOUMOUNI Fadeel      | Lot 1 | Architecture, authentification, profil       |
+| FADOU Léon           | Lot 2 | Fil d'articles, likes/dislikes, commentaires |
+| HOUNSINOU Doris      | Lot 3 | Gestion des amis                             |
+| KINTOSSOU Duc-Martin | Lot 4 | Chat, back-office                            |
 
 ## Mode de fonctionnement
 
@@ -30,10 +30,12 @@ Application de réseau social inspirée de Facebook, développée en PHP natif (
 ## Identifiants de test
 
 **Client**
-- Email : `test@test.com`
-- Mot de passe : `nouveaumotdepasse123`
+
+- Email : `client@test.com`
+- Mot de passe : `test1234`
 
 **Administration**
+
 - URL : `http://localhost/<nom-du-dossier>/vues/back-office/login.php`
 - Email : `admin@test.com`
-- Mot de passe : `password`
+- Mot de passe : `admin1234`
