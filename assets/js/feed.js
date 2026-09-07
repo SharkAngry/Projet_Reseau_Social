@@ -60,9 +60,11 @@ async function loadArticles() {
 }
 
 function createArticleHtml(article) {
-  const avatar = article.photo_profil || "assets/images/default-avatar.png";
+  const avatar = escapeHtml(
+    article.photo_profil || "assets/images/default-avatar.png",
+  );
   const imageHtml = article.image
-    ? `<img src="assets/images/posts/${article.image}" class="post-image">`
+    ? `<img src="assets/images/posts/${encodeURIComponent(article.image)}" class="post-image" alt="Image de la publication">`
     : "";
   const likedClass = article.my_reaction === "like" ? "active-like" : "";
   const dislikedClass =
@@ -71,13 +73,13 @@ function createArticleHtml(article) {
   return `
         <div class="post-card" id="post-${article.id}">
             <div class="post-header">
-                <img src="${avatar}" class="avatar-sm">
+                <img src="${avatar}" class="avatar-sm" alt="Photo de profil">
                 <div>
-                    <h4>${article.prenom} ${article.nom}</h4>
+                  <h4>${escapeHtml(article.prenom)} ${escapeHtml(article.nom)}</h4>
                     <span class="post-date">${new Date(article.created_at).toLocaleString("fr-FR")}</span>
                 </div>
             </div>
-            <p class="post-description">${article.description}</p>
+              <p class="post-description">${escapeHtml(article.description)}</p>
             ${imageHtml}
             <div class="post-actions">
                 <button class="btn-like ${likedClass}" onclick="handleReaction(${article.id}, 'like')">
@@ -97,6 +99,15 @@ function createArticleHtml(article) {
             </div>
         </div>
     `;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 // Function to handle like/dislike reactions
 async function handleReaction(articleId, type) {

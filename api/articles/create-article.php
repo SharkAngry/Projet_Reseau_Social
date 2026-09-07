@@ -12,6 +12,12 @@ if (empty($description)) {
     exit;
 }
 
+if (mb_strlen($description) > 5000) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'La publication ne peut pas dépasser 5000 caractères.']);
+    exit;
+}
+
 $image_name = null;
 
 if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -28,12 +34,19 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         echo json_encode(['success' => false, 'message' => 'Image trop volumineuse (max 5 Mo).']);
         exit;
     }
-// Génération d'un nom unique pour l'image
-    $extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-    $image_name = 'post_' . $current_user_id . '_' . time() . '.' . $extension;
+    $extensions = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/gif' => 'gif',
+    ];
+    $image_name = 'post_' . bin2hex(random_bytes(16)) . '.' . $extensions[$fileType];
     $uploadDir = '../../assets/images/posts/';
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-    move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $image_name);
+    if (!move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $image_name)) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => "Impossible d'enregistrer l'image."]);
+        exit;
+    }
 }
 
 try {

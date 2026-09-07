@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost/projet-reseau-social/api";
+const API_BASE = new URL("api/", document.baseURI).href.replace(/\/$/, "");
 async function apiRequest(
   endpoint,
   method = "GET",
@@ -24,7 +24,10 @@ async function apiRequest(
   }
 
   const response = await fetch(`${API_BASE}/${endpoint}`, options);
-  const data = await response.json();
+  const contentType = response.headers.get("content-type") || "";
+  const data = contentType.includes("application/json")
+    ? await response.json()
+    : { error: await response.text() };
 
   if (!response.ok) {
     throw new Error(data.error || data.message || "Une erreur est survenue");
