@@ -54,8 +54,14 @@ window.addEventListener("hashchange", router);
 window.addEventListener("DOMContentLoaded", router);
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("btn-logout")?.addEventListener("click", () => {
-    sessionStorage.clear();
-    window.location.hash = "login";
+  document.getElementById("btn-logout")?.addEventListener("click", async () => {
+    try {
+      await apiRequest("auth/logout.php", "POST");
+    } catch (error) {
+      console.error("Erreur de déconnexion :", error);
+    } finally {
+      sessionStorage.clear();
+      window.location.hash = "login";
+    }
   });
 });

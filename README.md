@@ -27,6 +27,16 @@ Application de réseau social inspirée de Facebook, développée en PHP natif (
 5. Lancer `composer install` à la racine.
 6. Ouvrir `http://localhost/<nom-du-dossier>/index.html`.
 
+### Mise à jour d'une installation existante
+
+Si la base de données a déjà été importée avant l'expiration des sessions, exécuter cette requête dans phpMyAdmin :
+
+```sql
+ALTER TABLE users ADD COLUMN session_token_expires DATETIME DEFAULT NULL AFTER session_token;
+```
+
+Les nouvelles connexions créeront ensuite un token valable 7 jours.
+
 ## Identifiants de test
 
 **Client**

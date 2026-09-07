@@ -30,6 +30,10 @@ async function apiRequest(
     : { error: await response.text() };
 
   if (!response.ok) {
+    if (response.status === 401) {
+      sessionStorage.removeItem("token");
+      if (window.location.hash !== "#login") window.location.hash = "login";
+    }
     throw new Error(data.error || data.message || "Une erreur est survenue");
   }
 

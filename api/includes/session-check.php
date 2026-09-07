@@ -12,7 +12,7 @@ if (empty($authHeader) || !str_starts_with($authHeader, 'Bearer ')) {
 
 $token = substr($authHeader, 7);
 
-$stmt = $pdo->prepare('SELECT id, nom, prenom, email, photo_profil FROM users WHERE session_token = ?');
+$stmt = $pdo->prepare('SELECT id, nom, prenom, email, photo_profil FROM users WHERE session_token = ? AND session_token_expires > NOW()');
 $stmt->execute([$token]);
 $currentUser = $stmt->fetch();
 

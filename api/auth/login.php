@@ -25,7 +25,7 @@ if (!$user || !password_verify($password, $user['password'])) {
 
 $token = bin2hex(random_bytes(32));
 
-$stmt = $pdo->prepare('UPDATE users SET session_token = ? WHERE id = ?');
+$stmt = $pdo->prepare('UPDATE users SET session_token = ?, session_token_expires = DATE_ADD(NOW(), INTERVAL 7 DAY) WHERE id = ?');
 $stmt->execute([$token, $user['id']]);
 
 echo json_encode([
