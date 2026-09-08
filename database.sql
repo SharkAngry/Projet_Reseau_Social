@@ -28,6 +28,7 @@ CREATE TABLE articles (
     description TEXT NOT NULL,
     image VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_articles_feed (created_at, id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
 CREATE TABLE reactions (

@@ -33,6 +33,7 @@ Si la base de données a déjà été importée avant l'expiration des sessions,
 
 ```sql
 ALTER TABLE users ADD COLUMN session_token_expires DATETIME DEFAULT NULL AFTER session_token;
+ALTER TABLE articles ADD INDEX idx_articles_feed (created_at, id);
 ```
 
 Les nouvelles connexions créeront ensuite un token valable 7 jours.

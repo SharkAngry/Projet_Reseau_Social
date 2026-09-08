@@ -1,9 +1,12 @@
 const _prevInitPage_feed = window.initPage || function () {};
+let currentArticlesPage = 1;
+
 window.initPage = function (page) {
   _prevInitPage_feed(page);
   if (page === "accueil") {
     initPublishForm();
-    loadArticles();
+    currentArticlesPage = 1;
+    loadArticles(1, false);
   }
 };
 
@@ -33,30 +36,57 @@ function initPublishForm() {
       await apiRequest("articles/create-article.php", "POST", formData, true);
       form.reset();
       filePreview.textContent = "Aucun fichier sélectionné";
-      loadArticles();
+      currentArticlesPage = 1;
+      loadArticles(1, false);
     } catch (error) {
       alert("Erreur : " + error.message);
     }
   });
 }
 
-async function loadArticles() {
+async function loadArticles(page = 1, append = false) {
   const container = document.getElementById("articles-flux");
   if (!container) return;
 
   try {
-    const data = await apiRequest("articles/get-articles.php", "GET");
-    container.innerHTML =
-      data.articles.length === 0
-        ? "<p class='empty'>Aucune publication pour le moment.</p>"
-        : "";
+    const data = await apiRequest(
+      `articles/get-articles.php?page=${page}&per_page=10`,
+      "GET",
+    );
+
+    if (!append) {
+      container.innerHTML = "";
+    }
+
+    if (!append && data.articles.length === 0) {
+      container.innerHTML =
+        "<p class='empty'>Aucune publication pour le moment.</p>";
+    }
+
     data.articles.forEach((article) => {
       container.insertAdjacentHTML("beforeend", createArticleHtml(article));
     });
+
+    currentArticlesPage = page;
+    updateLoadMoreButton(data.pagination?.has_more === true);
   } catch (error) {
     container.innerHTML =
       "<p style='color:red;'>Erreur de chargement du fil.</p>";
   }
+}
+
+function updateLoadMoreButton(hasMore) {
+  const button = document.getElementById("load-more-articles");
+  if (!button) return;
+
+  button.hidden = !hasMore;
+  button.disabled = false;
+  button.textContent = "Charger plus";
+  button.onclick = () => {
+    button.disabled = true;
+    button.textContent = "Chargement...";
+    loadArticles(currentArticlesPage + 1, true);
+  };
 }
 
 function createArticleHtml(article) {
