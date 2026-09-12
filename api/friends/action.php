@@ -56,6 +56,8 @@ try {
             $stmt = $pdo->prepare("INSERT INTO friendships (sender_id, receiver_id, status) VALUES (:current, :target, 'pending')
                                     ON DUPLICATE KEY UPDATE status = 'pending'");
             $stmt->execute([':current' => $current_id, ':target' => $target_id]);
+            $pdo->prepare("INSERT INTO notifications (user_id, actor_id, type)
+                           VALUES (?, ?, 'friend_request')")->execute([$target_id, $current_id]);
         }
 
     // ACTION : ACCEPTER UNE DEMANDE D'AMI

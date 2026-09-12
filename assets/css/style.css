@@ -5,26 +5,34 @@
    ============================================================ */
 
 /* ---------- RESET & BASE ---------- */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg:         #F4F5F7;
-  --ink:        #0F172A;
-  --ink-muted:  #64748B;
-  --accent:     #10B981;
-  --accent-dk:  #059669;
-  --surface:    #FFFFFF;
-  --border:     #E2E8F0;
-  --danger:     #EF4444;
-  --radius:     12px;
-  --radius-sm:  8px;
-  --shadow:     0 1px 3px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.06);
-  --shadow-md:  0 4px 24px rgba(15,23,42,.10);
-  --font:       'Inter', 'Segoe UI', system-ui, sans-serif;
-  --transition: .18s ease;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-html { font-size: 16px; }
+:root {
+  --bg: #f4f5f7;
+  --ink: #0f172a;
+  --ink-muted: #64748b;
+  --accent: #10b981;
+  --accent-dk: #059669;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --danger: #ef4444;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 24px rgba(15, 23, 42, 0.1);
+  --font: "Inter", "Segoe UI", system-ui, sans-serif;
+  --transition: 0.18s ease;
+}
+
+html {
+  font-size: 16px;
+}
 
 body {
   font-family: var(--font);
@@ -35,10 +43,19 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--accent); text-decoration: none; transition: color var(--transition); }
-a:hover { color: var(--accent-dk); }
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+a:hover {
+  color: var(--accent-dk);
+}
 
-img { display: block; max-width: 100%; }
+img {
+  display: block;
+  max-width: 100%;
+}
 
 /* ---------- NAVBAR ---------- */
 .navbar {
@@ -78,7 +95,9 @@ img { display: block; max-width: 100%; }
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--ink-muted);
-  transition: background var(--transition), color var(--transition);
+  transition:
+    background var(--transition),
+    color var(--transition);
 }
 .navbar-links a:hover {
   background: var(--bg);
@@ -95,12 +114,91 @@ img { display: block; max-width: 100%; }
   font-weight: 600;
   color: var(--ink-muted);
   cursor: pointer;
-  transition: border-color var(--transition), color var(--transition), background var(--transition);
+  transition:
+    border-color var(--transition),
+    color var(--transition),
+    background var(--transition);
 }
 #btn-logout:hover {
   border-color: var(--danger);
   color: var(--danger);
-  background: #FEF2F2;
+  background: #fef2f2;
+}
+
+#notifications-toggle {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+#notifications-toggle:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+#notifications-count {
+  display: inline-grid;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 4px;
+  padding: 0 5px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.notifications-panel {
+  position: fixed;
+  top: 68px;
+  right: 24px;
+  z-index: 110;
+  width: min(360px, calc(100vw - 32px));
+  max-height: 70vh;
+  overflow: auto;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+.notifications-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.notifications-heading button {
+  border: 0;
+  background: none;
+  color: var(--accent-dk);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.notification-item {
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+.notification-item.unread {
+  color: var(--ink);
+  font-weight: 700;
+  background: #ecfdf5;
+}
+.notification-item small {
+  display: block;
+  margin-top: 3px;
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  font-weight: 400;
 }
 
 /* ---------- LAYOUT PRINCIPAL ---------- */
@@ -155,11 +253,13 @@ img { display: block; max-width: 100%; }
   color: var(--ink);
   background: var(--bg);
   outline: none;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
 }
 .auth-container input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(16,185,129,.15);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
   background: var(--surface);
 }
 
@@ -173,7 +273,9 @@ img { display: block; max-width: 100%; }
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background var(--transition), transform var(--transition);
+  transition:
+    background var(--transition),
+    transform var(--transition);
 }
 .auth-container button[type="submit"]:hover {
   background: var(--accent-dk);
@@ -248,12 +350,14 @@ img { display: block; max-width: 100%; }
   color: var(--ink);
   background: var(--bg);
   outline: none;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
 }
 #profile-form input:focus,
 #password-form input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(16,185,129,.15);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
   background: var(--surface);
 }
 
@@ -270,7 +374,9 @@ img { display: block; max-width: 100%; }
   transition: background var(--transition);
 }
 #profile-form button:hover,
-#password-form button:hover { background: var(--accent-dk); }
+#password-form button:hover {
+  background: var(--accent-dk);
+}
 
 #profile-message,
 #password-message {
@@ -305,7 +411,14 @@ img { display: block; max-width: 100%; }
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 600px) {
-  .navbar { padding: 0 16px; }
-  .auth-container { margin-top: 32px; padding: 28px 20px; }
-  #page-content { padding: 20px 12px 60px; }
+  .navbar {
+    padding: 0 16px;
+  }
+  .auth-container {
+    margin-top: 32px;
+    padding: 28px 20px;
+  }
+  #page-content {
+    padding: 20px 12px 60px;
+  }
 }

@@ -34,6 +34,19 @@ Si la base de données a déjà été importée avant l'expiration des sessions,
 ```sql
 ALTER TABLE users ADD COLUMN session_token_expires DATETIME DEFAULT NULL AFTER session_token;
 ALTER TABLE articles ADD INDEX idx_articles_feed (created_at, id);
+CREATE TABLE notifications (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	user_id INT NOT NULL,
+	actor_id INT NOT NULL,
+	type ENUM('like', 'comment', 'friend_request') NOT NULL,
+	article_id INT DEFAULT NULL,
+	is_read BOOLEAN NOT NULL DEFAULT FALSE,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	INDEX idx_notifications_user (user_id, is_read, created_at),
+	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (actor_id) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE
+) ENGINE = InnoDB;
 ```
 
 Les nouvelles connexions créeront ensuite un token valable 7 jours.

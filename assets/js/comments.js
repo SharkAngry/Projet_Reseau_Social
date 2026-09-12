@@ -53,16 +53,25 @@ async function handleCommentSubmit(event, articleId) {
 }
 
 function createCommentHtml(comment) {
-  const avatar = escapeHtml(
+  const avatar = escapeCommentHtml(
     comment.photo_profil || "assets/images/default-avatar.png",
   );
   return `
         <div class="comment-bubble">
             <img src="${avatar}" class="avatar-xs" alt="Photo de profil">
             <div class="comment-content">
-                <span class="comment-author">${escapeHtml(comment.prenom)} ${escapeHtml(comment.nom)}</span>
-                <span class="comment-text">${escapeHtml(comment.contenu)}</span>
+                <span class="comment-author">${escapeCommentHtml(comment.prenom)} ${escapeCommentHtml(comment.nom)}</span>
+                <span class="comment-text">${escapeCommentHtml(comment.contenu)}</span>
             </div>
         </div>
     `;
+}
+
+function escapeCommentHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }

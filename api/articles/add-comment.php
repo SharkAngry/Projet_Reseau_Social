@@ -15,8 +15,21 @@ if (!$article_id || empty($contenu)) {
 }
 // Vérification de l'existence de l'article
 try {
+    $ownerStmt = $pdo->prepare('SELECT user_id FROM articles WHERE id = ?');
+    $ownerStmt->execute([$article_id]);
+    $articleOwnerId = $ownerStmt->fetchColumn();
+    if (!$articleOwnerId) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'Publication introuvable.']);
+        exit;
+    }
+
     $stmt = $pdo->prepare("INSERT INTO comments (article_id, user_id, contenu) VALUES (?, ?, ?)");
     $stmt->execute([$article_id, $current_user_id, $contenu]);
+    if ($articleOwnerId != $current_user_id) {
+        $pdo->prepare("INSERT INTO notifications (user_id, actor_id, type, article_id)
+                       VALUES (?, ?, 'comment', ?)")->execute([$articleOwnerId, $current_user_id, $article_id]);
+    }
     $comment_id = $pdo->lastInsertId();
 
     $select = $pdo->prepare("SELECT c.id, c.contenu, c.created_at, u.nom, u.prenom, u.photo_profil

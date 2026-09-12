@@ -1,10 +1,12 @@
 const _prevInitPage_feed = window.initPage || function () {};
 let currentArticlesPage = 1;
+let currentArticleSearch = "";
 
 window.initPage = function (page) {
   _prevInitPage_feed(page);
   if (page === "accueil") {
     initPublishForm();
+    initArticleSearch();
     currentArticlesPage = 1;
     loadArticles(1, false);
   }
@@ -50,7 +52,7 @@ async function loadArticles(page = 1, append = false) {
 
   try {
     const data = await apiRequest(
-      `articles/get-articles.php?page=${page}&per_page=10`,
+      `articles/get-articles.php?page=${page}&per_page=10&q=${encodeURIComponent(currentArticleSearch)}`,
       "GET",
     );
 
@@ -89,8 +91,23 @@ function updateLoadMoreButton(hasMore) {
   };
 }
 
+function initArticleSearch() {
+  const input = document.getElementById("article-search");
+  if (!input || input.dataset.initialized) return;
+  input.dataset.initialized = "true";
+  let timer;
+  input.addEventListener("input", () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      currentArticleSearch = input.value.trim();
+      currentArticlesPage = 1;
+      loadArticles(1, false);
+    }, 250);
+  });
+}
+
 function createArticleHtml(article) {
-  const avatar = escapeHtml(
+  const avatar = escapeFeedHtml(
     article.photo_profil || "assets/images/default-avatar.png",
   );
   const imageHtml = article.image
@@ -99,17 +116,25 @@ function createArticleHtml(article) {
   const likedClass = article.my_reaction === "like" ? "active-like" : "";
   const dislikedClass =
     article.my_reaction === "dislike" ? "active-dislike" : "";
+  const ownerActions =
+    Number(article.owner_id) === Number(getCurrentUserId())
+      ? `<div class="post-owner-actions">
+        <button type="button" onclick="editArticle(${article.id})">Modifier</button>
+        <button type="button" class="danger-link" onclick="deleteArticle(${article.id})">Supprimer</button>
+      </div>`
+      : "";
 
   return `
         <div class="post-card" id="post-${article.id}">
             <div class="post-header">
                 <img src="${avatar}" class="avatar-sm" alt="Photo de profil">
                 <div>
-                  <h4>${escapeHtml(article.prenom)} ${escapeHtml(article.nom)}</h4>
+                  <h4>${escapeFeedHtml(article.prenom)} ${escapeFeedHtml(article.nom)}</h4>
                     <span class="post-date">${new Date(article.created_at).toLocaleString("fr-FR")}</span>
                 </div>
+                ${ownerActions}
             </div>
-              <p class="post-description">${escapeHtml(article.description)}</p>
+              <p class="post-description">${escapeFeedHtml(article.description)}</p>
             ${imageHtml}
             <div class="post-actions">
                 <button class="btn-like ${likedClass}" onclick="handleReaction(${article.id}, 'like')">
@@ -131,7 +156,53 @@ function createArticleHtml(article) {
     `;
 }
 
-function escapeHtml(value) {
+function getCurrentUserId() {
+  try {
+    return JSON.parse(sessionStorage.getItem("user") || "{}").id || 0;
+  } catch (error) {
+    return 0;
+  }
+}
+
+async function editArticle(articleId) {
+  const descriptionElement = document.querySelector(
+    `#post-${articleId} .post-description`,
+  );
+  const currentDescription = descriptionElement?.textContent || "";
+  const updatedDescription = window.prompt(
+    "Modifier la publication",
+    currentDescription,
+  );
+  if (
+    updatedDescription === null ||
+    updatedDescription.trim() === currentDescription.trim()
+  )
+    return;
+
+  try {
+    await apiRequest("articles/update-article.php", "PUT", {
+      id: articleId,
+      description: updatedDescription,
+    });
+    loadArticles(1, false);
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function deleteArticle(articleId) {
+  if (!window.confirm("Supprimer cette publication ?")) return;
+  try {
+    await apiRequest("articles/delete-article.php", "DELETE", {
+      id: articleId,
+    });
+    loadArticles(1, false);
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+function escapeFeedHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")

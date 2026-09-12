@@ -31,6 +31,19 @@ CREATE TABLE articles (
     INDEX idx_articles_feed (created_at, id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
+CREATE TABLE notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    actor_id INT NOT NULL,
+    type ENUM('like', 'comment', 'friend_request') NOT NULL,
+    article_id INT DEFAULT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_notifications_user (user_id, is_read, created_at),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (actor_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE
+) ENGINE = InnoDB;
 CREATE TABLE reactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,

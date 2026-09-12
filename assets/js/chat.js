@@ -5,7 +5,7 @@ let chatInterval = null;
 
 // Récupération de l'utilisateur connecté depuis sessionStorage
 const _chatUser = JSON.parse(sessionStorage.getItem("user") || "{}");
-let currentUserId = _chatUser.id || null;
+let chatCurrentUserId = _chatUser.id || null;
 
 // Initialisation de la page chat
 const _prevInitPage_chat = window.initPage || function () {};
@@ -79,7 +79,7 @@ async function loadChatMessages() {
 
   // Relit à chaque fois — garanti d'être là si on est connecté
   const _user = JSON.parse(sessionStorage.getItem("user") || "{}");
-  currentUserId = _user.id || null;
+  chatCurrentUserId = _user.id || null;
 
   try {
     const data = await apiRequest(
@@ -95,7 +95,7 @@ async function loadChatMessages() {
 
       let htmlContent = "";
       data.messages.forEach((msg) => {
-        const isMe = parseInt(msg.sender_id) === parseInt(currentUserId);
+        const isMe = parseInt(msg.sender_id) === parseInt(chatCurrentUserId);
         const alignStyle = isMe
           ? "align-self:flex-end; background:#0084ff; color:white;"
           : "align-self:flex-start; background:#e4e6eb; color:black;";
@@ -131,7 +131,7 @@ async function loadChatMessages() {
 // Démarre la discussion avec un ami
 function startChatWithUser(receiverId, receiverName) {
   const _user = JSON.parse(sessionStorage.getItem("user") || "{}");
-  currentUserId = _user.id || null;
+  chatCurrentUserId = _user.id || null;
 
   currentReceiverId = receiverId;
 

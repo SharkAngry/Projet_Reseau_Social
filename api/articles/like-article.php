@@ -15,6 +15,15 @@ if (!$article_id || !in_array($type, ['like', 'dislike'])) {
 }
 // verification des articles existants
 try {
+    $ownerStmt = $pdo->prepare('SELECT user_id FROM articles WHERE id = ?');
+    $ownerStmt->execute([$article_id]);
+    $articleOwnerId = $ownerStmt->fetchColumn();
+    if (!$articleOwnerId) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'Publication introuvable.']);
+        exit;
+    }
+
     $stmt = $pdo->prepare("SELECT type FROM reactions WHERE user_id = ? AND article_id = ?");
     $stmt->execute([$current_user_id, $article_id]);
     $existing = $stmt->fetch();
@@ -33,6 +42,11 @@ try {
         $pdo->prepare("INSERT INTO reactions (user_id, article_id, type) VALUES (?, ?, ?)")
             ->execute([$current_user_id, $article_id, $type]);
         $action = 'added';
+    }
+
+    if ($type === 'like' && $articleOwnerId != $current_user_id && $action !== 'removed') {
+        $pdo->prepare("INSERT INTO notifications (user_id, actor_id, type, article_id)
+                       VALUES (?, ?, 'like', ?)")->execute([$articleOwnerId, $current_user_id, $article_id]);
     }
 
     $likeStmt = $pdo->prepare("SELECT COUNT(*) FROM reactions WHERE article_id = ? AND type = 'like'");
