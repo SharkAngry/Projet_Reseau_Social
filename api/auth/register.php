@@ -76,7 +76,7 @@ try {
                     ajouter des amis et partager vos premières publications.
                 </p>
                 <div style='text-align: center; margin: 30px 0 15px 0;'>
-                    <a href='http://localhost/tp-reseau-social/index.html#login'
+                    <a href='http://reseau-social.test/#login'
                        style='background-color: #42b72a; color: #ffffff; text-decoration: none;
                               padding: 12px 35px; font-size: 16px; font-weight: bold;
                               border-radius: 6px; display: inline-block;'>
