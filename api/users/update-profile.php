@@ -44,6 +44,11 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         echo json_encode(['success' => false, 'error' => 'Impossible de préparer le stockage de la photo']);
         exit;
     }
+    if (!is_writable($uploadDir)) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => 'Le stockage des photos n’est pas accessible en écriture']);
+        exit;
+    }
 
     $destination = $uploadDir . $fileName;
     if (!move_uploaded_file($_FILES['photo']['tmp_name'], $destination)) {
