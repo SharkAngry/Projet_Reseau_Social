@@ -30,11 +30,27 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         exit;
     }
 
-    $extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+    $extensions = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
+    $extension = $extensions[$fileType];
     $fileName = 'user_' . $currentUser['id'] . '_' . time() . '.' . $extension;
-    $destination = __DIR__ . '/../../assets/images/profiles/' . $fileName;
+    $uploadDir = __DIR__ . '/../../assets/images/profiles/';
 
-    move_uploaded_file($_FILES['photo']['tmp_name'], $destination);
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => 'Impossible de préparer le stockage de la photo']);
+        exit;
+    }
+
+    $destination = $uploadDir . $fileName;
+    if (!move_uploaded_file($_FILES['photo']['tmp_name'], $destination)) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => 'Impossible d\'enregistrer la photo']);
+        exit;
+    }
 
     $photoPath = 'assets/images/profiles/' . $fileName;
 }
